@@ -2,8 +2,10 @@
 
 - 1 broker, 1 replica, 1 partition
 - Zookeeper (manager of brokers & leaders)
-- kafdrop (UI)
-- rest-proxy (nice REST interface for some admin stuff)
+- Schema Registry
+- Kafdrop (UI)
+- Schema Registry UI
+- Rest-proxy (nice REST interface for some admin stuff)
 
 # Sources
 used to create this setup :
@@ -39,20 +41,7 @@ Schema-registry UI
 - https://hub.docker.com/r/landoop/schema-registry-ui/
 
 
-
-
-### In scope : 
-
-- Creating and deleting topics
-- Publishing messages from commandline
-- Creating consumer groups and consuming messages from commandline
-- Using UIs
-
-- Publishing messages from code
-- Creating consumer groups and consuming messages from code
-- Avro schemas
-
-### Outside scope :
+### Not included in HelloWorld setup :
 
 Infra : 
 - redundancy (partitions & topics)
@@ -77,12 +66,12 @@ Additional kafka-tech
 
 .. and much more
 
-### Part 1 : First spin up the local infra
+### Spin up the local infra
 
 `$ docker-compose up -d`
 
 
-### Part 2 : Playing with the command line and browser
+### Playing with the command line and browser
 
 Visit the UI : `http://localhost:9000`
 
@@ -162,17 +151,10 @@ fails with msg :  `{"error_code":40801,"message":"Schema registration or lookup 
 because we are not running with schema-registry
 
 
-## Part 3 : Playing with code
 
-1. Produce some stuff
-2. Consume some stuff
-3. Play with AutoOffsetReset
-4. Admin some stuff
+## Schemas 
 
-
-## Part 4 : schemas 
-
-UI @ `http://localhost:8000`
+Schema Registry UI @ `http://localhost:8000`
 
 Schema-registry Endpoints :
 - `curl http://localhost:8081/config`                                  see current config
@@ -181,7 +163,6 @@ Schema-registry Endpoints :
 - `curl http://localhost:8081/subjects/{subject}/versions/latest`             get latest version of a schema
 - `curl http://localhost:8081/schemas`                                 see existing schemas with details
 - `curl http://localhost:8081/schemas/ids/{int}`                       see specific schema
-
 
 
 1. Create a schema for a topic using naming convention `topic-format`
@@ -200,7 +181,7 @@ Using schema in code
 Kafka Vulcan Producer does calls (visible with `docker logs -f schema-registry`)
 
 
-# Post-Discussion
+# Open questions
 
 Vulcan library :
 - by default does strong validations : overrides available or go to complete custom logic if necessary ?
