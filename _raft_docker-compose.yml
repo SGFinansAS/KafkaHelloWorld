@@ -1,0 +1,88 @@
+version: '2'
+services:
+
+  # service for managing message schemas for topics
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.1.0
+    hostname: schema-registry
+    container_name: schema-registry
+    restart: "always"
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://broker:29092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      # below needed for UI
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: GET,POST,PUT,OPTIONS
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+
+  # schema-registry UI @ http://localhost:8000
+  schema-registry-ui:
+    image: landoop/schema-registry-ui
+    hostname: schema-registry-ui
+    container_name: schema-registry-ui
+    depends_on:
+      - schema-registry
+    ports:
+      - "8000:8000"
+    environment:
+      SCHEMAREGISTRY_URL: http://localhost:8081
+
+  # UI exposing topics & messages @ http://localhost:9000/
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:29092"                               # needs to go to external kafka listener
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
+
+  # kafka with a single broker
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ENABLE_KRAFT: yes
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_BROKER_ID: 1
+      KAFKA_BOOTSTRAP_SERVERS: "broker:9092"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SCHEMA_REGISTRY_URL: "schema-registry:8081"
+
+  # Externally exposes a bunch of functionality (list topics, create topic, read/write msges, and more)
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.5.0
+    container_name: rest-proxy
+    depends_on:
+#      - zookeeper
+      - kafka
+      - schema-registry
+    ports:
+      - '8082:8082'
+      - '31005:31005'
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'kafka:29092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      KAFKAREST_JMX_HOSTNAME: "localhost"
+      KAFKAREST_JMX_PORT: 31005
+
+
+
+
+
