@@ -88,7 +88,7 @@ Create topic "onAccount3" using rest-proxy
 
 
 Create topics at `http://localhost:8082/v3/clusters/{cluster_id}/topics` :
-```
+```sh
 curl -X POST http://localhost:8082/v3/clusters/PhzR5OojSimwIOxl_ANQ5g/topics \
   --header 'Content-Type: application/vnd.api+json' \
   --data-raw '{
@@ -104,35 +104,37 @@ curl -X POST http://localhost:8082/v3/clusters/PhzR5OojSimwIOxl_ANQ5g/topics \
 
 
 Delete topic :
-```
+```sh
 curl -X DELETE http://localhost:8082/v3/clusters/PhzR5OojSimwIOxl_ANQ5g/topics/onAccount4
 ```
 
 Write a JSON msg to topic with no schema :
-```
+```sh
 curl -X POST http://localhost:8082/topics/onAccount1 \
   -H "Content-Type: application/vnd.kafka.json.v2+json" \
   --data '{"records":[{"value": {"id": "some-value"}}]}'
 ```
 
 Get topic information :
-```curl http://localhost:8082/topics/onAccount1```
+```sh
+curl http://localhost:8082/topics/onAccount1
+```
 
 Create a consumer group to consume : /consumer/{consumerGroup} with 'name: consumerId'
-```
+```sh
 curl -X POST http://localhost:8082/consumers/workflow \
    --header "Content-Type: application/vnd.kafka.json.v2+json" \
    --data '{"name": "claudio", "format": "json", "auto.offset.reset": "earliest"}'
 ```
 
 Subscribe to a topic : /consumers/{group_id}/instances/{consumer_id}/subscription
-```
+```sh
 curl -X POST http://localhost:8082/consumers/workflow/instances/claudio/subscription \
   -H "Content-Type: application/vnd.kafka.v2+json" --data '{"topics":["onAccount1"]}'
 ```
 
 Consume all records :
-```
+```sh
 curl http://localhost:8082/consumers/workflow/instances/claudio/records \
   -H "Accept: application/vnd.kafka.json.v2+json"
 ```
@@ -140,7 +142,7 @@ curl http://localhost:8082/consumers/workflow/instances/claudio/records \
 
 
 Produce an AVRO msg
-```
+```sh
 curl -v http://localhost:8082/topics/onAccount1 \
  -H "Content-Type: application/vnd.kafka.avro.v2+json" \
  -H "Accept: application/vnd.kafka.v2+json" \
@@ -166,7 +168,7 @@ Schema-registry Endpoints :
 
 
 1. Create a schema for a topic using naming convention `topic-format`
-```
+```sh
 curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
 --data '{...some-json...}' \
 http://localhost:8081/subjects/{topic-format}/versions
