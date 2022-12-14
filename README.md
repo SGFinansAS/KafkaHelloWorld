@@ -73,7 +73,7 @@ Additional kafka-tech
 
 ### Playing with the command line and browser
 
-Visit the UI : `http://localhost:9000`
+Kafdrop UI (e.g. see topics) : `http://localhost:9000`
 
 List topics with `curl http://localhost:8082/topics`
 
