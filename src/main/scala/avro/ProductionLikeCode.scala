@@ -1,13 +1,12 @@
 package avro
 
-import avro.OnAccountPublisherConfig.{producerSettings, topicName}
+import avro.OnAccountPublisherConfig.topicName
 import cats.effect.syntax.all._
 import avro.domain.OnAccount
 import avro.domain.OnAccount._
 import cats.Monad
 import cats.effect.std.Console
 import cats.effect.{IO, IOApp}
-import fs2.Stream
 import fs2.kafka._
 
 object Main extends IOApp.Simple {
