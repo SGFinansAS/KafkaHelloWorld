@@ -18,15 +18,11 @@ import fs2.kafka._
  * */
 object Main extends IOApp.Simple {
 
-  private def askName = for {
-    _ <- Console[IO].println("Hi, please enter a name for the message: ")
-    name <- Console[IO].readLine
-  } yield name
-
-  def askNamePublishRepeat(publisher: OnAccountPublisher): IO[Unit] = {
+  private def askNamePublishRepeat(publisher: OnAccountPublisher): IO[Unit] = {
     Monad[IO].whileM_(IO.pure(true)) {
       for {
-        name <- askName
+        _ <- Console[IO].println("Hi, please enter a name for the message: ")
+        name <- Console[IO].readLine
         _ <- publisher.safePublish(OnAccount(name, 1, 1))
       } yield ()
     }
@@ -62,7 +58,7 @@ class OnAccountPublisher(publisher: KafkaProducer[IO, Unit, OnAccount]) extends 
     else
       publisher.produceOne_(ProducerRecord(topicName, (), onAccount))
         .flatten
-        .flatMap(r => IO.println(s"published record : $r"))
+        .flatMap(md => IO.println(s"published record : $onAccount with offset ${md.offset()}"))
   }
 }
 
