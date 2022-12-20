@@ -9,6 +9,13 @@ import cats.effect.std.Console
 import cats.effect.{IO, IOApp}
 import fs2.kafka._
 
+/**
+ * Runs a commandline app that loops the following : ask for a name and publish it inside an AVRO message.
+ *
+ * - Enter the name "error" to test error-handling
+ * - Other names get published
+ *
+ * */
 object Main extends IOApp.Simple {
 
   private def askName = for {
