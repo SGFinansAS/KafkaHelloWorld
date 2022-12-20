@@ -14,9 +14,9 @@ case class OnAccount(name: String,
 object OnAccount {
   implicit val onAccountCodec: Codec[OnAccount] =
     Codec.record(
-      name = "onAccount", // I had typo here : OnAccount, and got 404 from schemaRegistry
+      name = "onAccount1", // I had typo here : OnAccount, and got 404 from schemaRegistry
       namespace = "com.ff",
-      doc = "onAccount2 value".some,
+      doc = "This is the first bklaslfj".some,
     ) { field =>
       (
         field("name", _.name),

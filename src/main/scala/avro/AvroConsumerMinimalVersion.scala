@@ -7,7 +7,7 @@ import avro.domain.OnAccount.onAccountDeserializer
 
 object AvroConsumerMinimalVersion extends IOApp.Simple {
 
-  val topicName: String = "onAccount2"  // used in schema-validation
+  val topicName: String = "onAccount1"  // used in schema-validation
   val consumerSettings: ConsumerSettings[IO, Unit, OnAccount] = ConsumerSettings(
     keyDeserializer = Deserializer[IO, Unit],
     valueDeserializer = onAccountDeserializer // validates schemaRegistry because we use .using(avroSettings)
