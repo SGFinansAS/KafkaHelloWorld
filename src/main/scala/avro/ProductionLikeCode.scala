@@ -1,6 +1,6 @@
 package avro
 
-import avro.OnAccountPublisherConfig.topicName
+import avro.OnAccountPublisherConfig.{producerSettings, topicName}
 import cats.effect.syntax.all._
 import avro.domain.OnAccount
 import avro.domain.OnAccount._
@@ -27,7 +27,7 @@ object Main extends IOApp.Simple {
 
   val run: IO[Unit] = {
     val program = for {
-      producer <- KafkaProducer.resource(OnAccountPublisherConfig.producerSettings)
+      producer <- KafkaProducer.resource(producerSettings)
       _ <- askNamePublishRepeat(new OnAccountPublisher(producer)).toResource
     } yield ()
 
@@ -53,7 +53,7 @@ class OnAccountPublisher(publisher: KafkaProducer[IO, Unit, OnAccount]) extends 
     if (onAccount.name == "error")
       IO.raiseError(new Exception("error name"))
     else
-      publisher.produce(ProducerRecords.one(ProducerRecord(topicName, (), onAccount)))
+      publisher.produceOne_(ProducerRecord(topicName, (), onAccount))
         .flatten
         .flatMap(r => IO.println(s"published record : $r"))
   }
